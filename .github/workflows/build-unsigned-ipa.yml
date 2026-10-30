@@ -11,7 +11,7 @@ on:
         required: false
         default: 'macos-15'
       mode:
-        description: 'Build mode: scheme | target'
+        description: 'Build mode: scheme | scheme-loose | target'
         required: false
         default: 'scheme'
 
@@ -58,9 +58,16 @@ jobs:
           xcodebuild -list -project Plozz.xcodeproj 2>&1 | tee -a build.log || true
 
       - name: Build via scheme (upstream style)
-        if: ${{ (github.event.inputs.mode || 'scheme') == 'scheme' }}
+        if: ${{ startsWith(github.event.inputs.mode || 'scheme', 'scheme') }}
         run: |
           set -o pipefail
+          # scheme-loose: AetherEngine 里有一处 Swift 6 严格并发报错，
+          # 放宽为 minimal + Swift 5 语言模式以放行依赖库。
+          EXTRA=""
+          if [ "${{ github.event.inputs.mode }}" = "scheme-loose" ]; then
+            echo "== 使用放宽的并发检查 =="
+            EXTRA="SWIFT_STRICT_CONCURRENCY=minimal SWIFT_VERSION=5"
+          fi
           xcodebuild build \
             -project Plozz.xcodeproj \
             -scheme PlozziOS \
@@ -72,6 +79,7 @@ jobs:
             CODE_SIGN_IDENTITY="" \
             ARCHS=arm64 \
             ONLY_ACTIVE_ARCH=YES \
+            $EXTRA \
             2>&1 | tee -a build.log | tail -n 80
 
       - name: Build via target (fallback)
