@@ -110,8 +110,7 @@ public struct PlozziOSRootView: View {
     }
 
     private var appContent: some View {
-        appContentBase
-            .appContentEnvironmentLayer
+        appContentEnvironmentLayer
     }
 
     private var appContentBase: some View {
