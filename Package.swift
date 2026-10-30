@@ -243,8 +243,8 @@ let package = Package(
         // 7.51.0 includes route-selected lossless PCM spatial beds from 7.50.0.
         // The fork retains Plozz's timing, subtitle, diagnostics and linkage fixes.
         .package(
-            url: "https://github.com/brandomoore/AetherEngine",
-            revision: "c1ce4cf48bad416e6be5230032a2b7f332e833d8",
+            url: "https://github.com/cn888/AetherEngine",
+            revision: "13ed5c62ddee9862937d3cada5e86c26b9fa5cec",
             traits: [
                 "TrueHDObjectAudio", "DTSXObjectAudio",
                 "DualLayerDolbyVision", "DolbyVisionStillReshaping",
