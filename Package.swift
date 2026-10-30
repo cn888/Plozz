@@ -244,7 +244,7 @@ let package = Package(
         // The fork retains Plozz's timing, subtitle, diagnostics and linkage fixes.
         .package(
             url: "https://github.com/cn888/AetherEngine",
-            revision: "13ed5c62ddee9862937d3cada5e86c26b9fa5cec",
+            revision: "f31f7e23036313ee0b6f3ebd93e58d7c71600310",
             traits: [
                 "TrueHDObjectAudio", "DTSXObjectAudio",
                 "DualLayerDolbyVision", "DolbyVisionStillReshaping",
