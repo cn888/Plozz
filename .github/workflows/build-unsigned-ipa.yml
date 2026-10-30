@@ -17,12 +17,30 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - name: Select newest Xcode on the runner
+        run: |
+          echo "=== 已安装的 Xcode ==="
+          ls -d /Applications/Xcode*.app 2>/dev/null || echo "(none)"
+          # 选版本号最大的那个（sort -V 做版本排序）
+          NEWEST=$(ls -d /Applications/Xcode*.app 2>/dev/null | sort -V | tail -n 1)
+          if [ -n "$NEWEST" ]; then
+            echo "选用: $NEWEST"
+            sudo xcode-select -s "$NEWEST"
+          fi
+
       - name: Show toolchain
         run: |
           uname -m
           xcodebuild -version
           xcrun --sdk iphoneos --show-sdk-version
           swift --version
+          SDK_MAJOR=$(xcrun --sdk iphoneos --show-sdk-version | cut -d. -f1)
+          echo "iOS SDK major = $SDK_MAJOR"
+          # Plozz 依赖的 AetherEngine 用到 iOS 26 API；SDK 太旧必然编译失败，提前明确报错。
+          if [ "$SDK_MAJOR" -lt 26 ]; then
+            echo "::error::这台 runner 的 iOS SDK 只有 $SDK_MAJOR，需要 26 或更高（Plozz 用到 iOS 26 API）。请换更新的 runner 镜像。"
+            exit 1
+          fi
 
       - name: Install XcodeGen
         run: brew install xcodegen
