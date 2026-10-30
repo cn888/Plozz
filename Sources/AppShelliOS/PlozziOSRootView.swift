@@ -110,6 +110,11 @@ public struct PlozziOSRootView: View {
     }
 
     private var appContent: some View {
+        appContentBase
+            .appContentEnvironmentLayer
+    }
+
+    private var appContentBase: some View {
         Group {
             if !appModel.canEnterApp {
                 PlozziOSOnboardingView(appModel: appModel)
@@ -285,6 +290,10 @@ public struct PlozziOSRootView: View {
                 onCancel: { showingProfileSwitcher = false }
             )
         }
+    }
+
+    private var appContentEnvironmentLayer: some View {
+        appContentBase
         .environment(\.familyGuidanceProvider, appModel.familyGuidance)
         .environment(\.plozzShowsContentRatings, appModel.settings.contentRatings.showsRatings)
         .environment(
