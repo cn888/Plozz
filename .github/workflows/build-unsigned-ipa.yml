@@ -31,16 +31,19 @@ jobs:
         run: |
           # 用裸 xcodegen：上游 tools/generate-project.sh 依赖自建 build-lease 服务。
           xcodegen generate
+          xcodebuild -list -project Plozz.xcodeproj || true
 
       - name: Build (code signing disabled)
         run: |
           set -o pipefail
+          # 注意：-target 不能和 -derivedDataPath 同时用（会报 exit 64），
+          # 所以这里用 CONFIGURATION_BUILD_DIR 把产物固定输出到 build/out。
           xcodebuild build \
             -project Plozz.xcodeproj \
             -target PlozziOS \
             -configuration Release \
             -sdk iphoneos \
-            -derivedDataPath build \
+            CONFIGURATION_BUILD_DIR="$(pwd)/build/out" \
             CODE_SIGNING_ALLOWED=NO \
             CODE_SIGNING_REQUIRED=NO \
             CODE_SIGN_IDENTITY="" \
@@ -49,7 +52,7 @@ jobs:
 
       - name: Package unsigned IPA
         run: |
-          APP=$(find build/Build/Products/Release-iphoneos -maxdepth 1 -name '*.app' | head -n 1)
+          APP=$(find build/out -maxdepth 1 -name '*.app' | head -n 1)
           test -n "$APP" || { echo "no .app produced"; exit 1; }
           echo "app bundle: $APP"
           rm -rf Payload Plozz-unsigned.ipa
